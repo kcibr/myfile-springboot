@@ -1,18 +1,21 @@
 package com.dj.myfile.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @Data
 //@EqualsAndHashCode(callSuper = true)
 @TableName(value = "user")
-public class User {
+public class User extends BaseColumns {
     /**
      * 用户id
      */
+    @TableId(type = IdType.AUTO)
     private Integer uid;
     /**
      * 昵称
@@ -49,10 +52,6 @@ public class User {
      */
     private String tel;
     /**
-     * 地址
-     */
-    private String address;
-    /**
      * 最后登录时间
      */
     private LocalDateTime lastLoginTime;
@@ -72,5 +71,6 @@ public class User {
     /**
      * 逻辑删除
      */
+    @TableLogic
     private Integer isDelete;
 }
