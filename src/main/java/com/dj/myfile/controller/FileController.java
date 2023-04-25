@@ -5,10 +5,7 @@ import com.dj.myfile.entity.MFile;
 import com.dj.myfile.entity.User;
 import com.dj.myfile.service.MFileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -60,13 +57,16 @@ public class FileController {
      * @param fileGroup
      * @return String
      */
-    @PostMapping("/createNewFolder")
-    public String NewFolder(String folderName, String parentFolderPath, String fileGroup){
-       return mFileService.CreateNewFolder(folderName,parentFolderPath,fileGroup);
+
+
+    @GetMapping("/createNewFolder")
+    public String NewFolder( String folderName, String parentFolderPath, String fileGroup){
+        return mFileService.CreateNewFolder(folderName,parentFolderPath,fileGroup);
     }
 
     @PostMapping("/uploadFile")
     public String uploadFiles(List<MultipartFile> files ,String uploadFolderPath,String fileGroup){
+        System.out.println(files);
         for (MultipartFile file : files){
             try {
                 mFileService.uploadFile(file,uploadFolderPath,fileGroup);

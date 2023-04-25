@@ -1,4 +1,7 @@
 package com.dj.myfile.service;
 
-public interface UserService {
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.dj.myfile.entity.User;
+
+public interface UserService extends IService<User> {
 }
