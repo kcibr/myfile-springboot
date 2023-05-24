@@ -5,6 +5,7 @@ import com.dj.myfile.entity.MFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 
 public interface MFileService extends IService<MFile> {
@@ -21,5 +22,5 @@ public interface MFileService extends IService<MFile> {
      * @return String
      */
     String uploadFile(MultipartFile file, String parentFolderPath, String fileGroup) throws IOException;
-
+    MFile download(int fid, OutputStream os)throws IOException;
 }

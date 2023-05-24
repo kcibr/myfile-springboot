@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dj.myfile.entity.MFile;
 import com.dj.myfile.mapper.MFileMapper;
 import com.dj.myfile.service.MFileService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 @Service
 public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements MFileService {
@@ -103,6 +103,30 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         save(mFile);
         // TODO 更新文件夹大小
         return "上传成功";
+    }
+    @Override
+    public MFile download(int fid, OutputStream os) throws IOException{
+        MFile file = getById(fid);
+        //获取文件下载地址
+        String filepath=root_path+file.getPath();
+        System.out.println("下载地址==》"+filepath);
+
+        //读取目标文件
+        java.io.File f=new java.io.File(filepath);
+
+        //创建输入流
+        InputStream is=new FileInputStream(f);
+
+        //利用IOUtils将输入流的内容 复制到输出流
+        IOUtils.copy(is,os);
+        os.flush();
+
+        //关闭流
+        is.close();
+        os.close();
+        System.out.println("下载完成");
+
+        return null;
     }
 }
 
