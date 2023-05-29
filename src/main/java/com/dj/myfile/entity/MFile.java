@@ -8,7 +8,7 @@ import lombok.Data;
 
 @TableName(value ="m_file")
 @Data
-public class MFile {
+public class MFile extends BaseColumns{
     /**
      * id
      */
@@ -38,7 +38,7 @@ public class MFile {
     /**
      * 文件大小
      */
-    private Double size;
+    private String size;
 
     /**
      * 文件组*

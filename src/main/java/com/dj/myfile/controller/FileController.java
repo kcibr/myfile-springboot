@@ -5,6 +5,7 @@ import com.dj.myfile.entity.MFile;
 import com.dj.myfile.entity.User;
 import com.dj.myfile.service.MFileService;
 import com.dj.myfile.utils.Result;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName FileController
@@ -52,15 +54,36 @@ public class FileController {
      * @return Object
      */
     @GetMapping("/queryAll")
-    public Object queryFileList(String parentDir,String search){
+    public Object queryFileList(String parentDir,String search,String type){
         if (search == null){
             search = "";
         }
+        if (type == null){
+            type = "";
+        }
         QueryWrapper<MFile> wrapper = new QueryWrapper<>();
         wrapper.eq("parent_dir", parentDir)
+                .like("type", type)
                 .like("f_name",search);
         System.out.println("调用了查询接口");
     return mFileService.list(wrapper);
+    }
+    @GetMapping("/queryType")
+    public Object typeQueryFileList(String fileGroup,String search,String type){
+        if (search == null){
+            search = "";
+        }
+        if (type == null){
+            type = "";
+        } else {
+
+        }
+        QueryWrapper<MFile> wrapper = new QueryWrapper<>();
+        wrapper.eq("file_group", fileGroup)
+                .like("type", type)
+                .like("f_name",search);
+        System.out.println("调用了查询接口");
+        return mFileService.list(wrapper);
     }
     /**
      *
@@ -100,28 +123,27 @@ public class FileController {
         return "上传完成";
     }
 
-    @GetMapping("/download")
-    public void fileDownload(int fid, HttpServletResponse response)throws IOException{
-        System.out.println(fid);
-        MFile f = mFileService.getById(fid);
+    @PostMapping("/download")
+    public void fileDownload(@RequestBody Map<String, String> params, HttpServletResponse response)throws IOException{
+        System.out.println(params.get("fid"));
+        System.out.println(params.get("fName"));
+        MFile f = mFileService.getById(params.get("fid"));
 
         File file = new File(root_path+f.getPath());
 
-        InputStream inputStream = new FileInputStream(file);
-
+        InputStream inputStream = new FileInputStream(root_path+f.getPath());
+        response.reset();
         response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-        response.setHeader("Content-Length", String.valueOf(file.length()));
-        IOUtils.copy(inputStream, response.getOutputStream());
-        response.flushBuffer();
-//        response.reset();
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("application/x-download;charset=UTF-8");
-//        response.setHeader("Content-Disposition", "attachment;filename="+
-//                URLEncoder.encode(f.getFName(),"Utf-8"));
-//        response.setHeader("Access-Control-Allow-Origin","http://localhost:8080");
-//
-//        mFileService.download(fid, response.getOutputStream());
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+        response.addHeader("Content-Disposition", "attachment; filename="+ URLEncoder.encode(f.getFName(), "UTF-8"));
+        ServletOutputStream outputStream = response.getOutputStream();
+        byte[] b = new byte[1024];
+        int len;
+        while((len = inputStream.read(b)) > 0){
+            outputStream.write(b, 0, len);
+        }
+        inputStream.close();
     }
 
 }

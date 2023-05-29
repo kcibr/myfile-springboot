@@ -1,4 +1,4 @@
-package com.dj.myfile.utils;
+package com.dj.myfile.service.impl;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -17,21 +17,22 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Component
-public class BaseColumnsAutoCreate implements MetaObjectHandler {
+public class MybatisColumnsHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-
+        System.out.println("触发了自动生成字段");
         this.strictInsertFill(metaObject,"createTime", LocalDateTime.class,LocalDateTime.now());
         this.strictInsertFill(metaObject,"updateTime", LocalDateTime.class,LocalDateTime.now());
 
-        this.strictInsertFill(metaObject,"createUser", String.class, getCurrentUser());
-        this.strictInsertFill(metaObject,"updateUser", String.class, getCurrentUser());
+        this.strictInsertFill(metaObject,"createAuthor", String.class, getCurrentUser());
+        this.strictInsertFill(metaObject,"updateAuthor", String.class, getCurrentUser());
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject,"updateTime", LocalDateTime.class,LocalDateTime.now());
-        this.strictInsertFill(metaObject,"updateUser", String.class,getCurrentUser());
+        this.strictInsertFill(metaObject,"updateAuthor", String.class,getCurrentUser());
+
     }
     private String getCurrentUser(){
         try {

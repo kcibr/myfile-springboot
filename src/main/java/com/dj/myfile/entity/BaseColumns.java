@@ -18,7 +18,7 @@ public class BaseColumns {
     /**
      * 创建时间，新增时设置，搜索时不搜
      */
-    @TableField(fill = FieldFill.INSERT, select = false)
+    @TableField(fill = FieldFill.INSERT, select = true)
     private LocalDateTime createTime;
 
     /**
@@ -30,6 +30,6 @@ public class BaseColumns {
     /**
      * 更新时间,新增和更新时都设置，搜索时不搜
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE, select = false)
+    @TableField(fill = FieldFill.INSERT_UPDATE, select = true)
     private LocalDateTime updateTime;
 }

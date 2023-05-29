@@ -39,6 +39,7 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
             folder.setIsFolder(1);
             folder.setType("folder");
             folder.setFileGroup(fileGroup);
+            folder.setSize("---");
             folder.setParentDir(parentFolderPath);
             folder.setPath(parentFolderPath+"/"+folderName);
             if (save(folder)){
@@ -76,8 +77,33 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         String filetype = filename.substring(filename.lastIndexOf(".") + 1);
         System.out.println("03.文件类型==》"+filetype);
         // 4.获取文件大小
-        double filesize = file.getSize();
-        System.out.println("04.文件大小==》"+filesize);
+        double size = file.getSize();
+        String fileSize = "";
+        /**
+         * 自动调整单位（保留2位小数）
+         */
+        String dec="%.2f"; //两位小数
+        int kb=1024;
+        int mb=1024*1024;
+        int gb=1024*1024*1024;
+        if (size >= gb) {
+
+            fileSize = String.format(dec, size / gb) + "GB";
+
+        } else if (size<gb && size>=mb) {
+
+            fileSize = String.format(dec, size / mb) + "MB";
+
+        } else if (size<mb && size>kb) {
+
+            fileSize = String.format(dec, size / kb)+ "KB";
+
+        }else if (size<kb){
+
+            fileSize = String.format(dec, size) + "B";
+
+        }
+        System.out.println("04.文件大小==》"+fileSize);
         // 6.上传文件
         //判断文件夹是否存在，不存在则创建一个
         File file1 = new File(root_path+"/"+parentFolderPath);
@@ -98,7 +124,7 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         mFile.setPath(filepath);
         mFile.setType(filetype);
         mFile.setParentDir(parentFolderPath);
-        mFile.setSize(filesize);
+        mFile.setSize(fileSize);
         mFile.setIsFolder(0);
         save(mFile);
         // TODO 更新文件夹大小
@@ -115,17 +141,16 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         java.io.File f=new java.io.File(filepath);
 
         //创建输入流
-        InputStream is=new FileInputStream(f);
-
+        InputStream is = new FileInputStream(f);
+        //做一些业务判断，我这里简单点直接输出，你也可以封装到实体类返回具体信息
+        if (is == null) {
+            System.out.println("文件不存在");
+        }
         //利用IOUtils将输入流的内容 复制到输出流
-        IOUtils.copy(is,os);
+        IOUtils.copy(is, os);
         os.flush();
-
-        //关闭流
         is.close();
         os.close();
-        System.out.println("下载完成");
-
         return null;
     }
 }
