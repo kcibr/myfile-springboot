@@ -21,17 +21,18 @@ public class MybatisColumnsHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         System.out.println("触发了自动生成字段");
+        System.out.println("用户："+ getCurrentUser());
         this.strictInsertFill(metaObject,"createTime", LocalDateTime.class,LocalDateTime.now());
         this.strictInsertFill(metaObject,"updateTime", LocalDateTime.class,LocalDateTime.now());
 
-        this.strictInsertFill(metaObject,"createAuthor", String.class, getCurrentUser());
-        this.strictInsertFill(metaObject,"updateAuthor", String.class, getCurrentUser());
+        this.strictInsertFill(metaObject,"createUser", String.class, getCurrentUser());
+        this.strictInsertFill(metaObject,"updateUser", String.class, getCurrentUser());
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject,"updateTime", LocalDateTime.class,LocalDateTime.now());
-        this.strictInsertFill(metaObject,"updateAuthor", String.class,getCurrentUser());
+        this.strictInsertFill(metaObject,"updateUser", String.class,getCurrentUser());
 
     }
     private String getCurrentUser(){

@@ -105,6 +105,12 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         }
         System.out.println("04.文件大小==》"+fileSize);
         // 6.上传文件
+        // 判断该路径下是否已经存在同名文件，有则中断执行返回信息
+        QueryWrapper w = new QueryWrapper<>();
+        w.eq("path",filepath);
+        if (getOne(w) != null){
+            return "已存在同名文件："+filename;
+        }
         //判断文件夹是否存在，不存在则创建一个
         File file1 = new File(root_path+"/"+parentFolderPath);
         if (!file1.exists()) {
@@ -129,29 +135,6 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         save(mFile);
         // TODO 更新文件夹大小
         return "上传成功";
-    }
-    @Override
-    public MFile download(int fid, OutputStream os) throws IOException{
-        MFile file = getById(fid);
-        //获取文件下载地址
-        String filepath=root_path+file.getPath();
-        System.out.println("下载地址==》"+filepath);
-
-        //读取目标文件
-        java.io.File f=new java.io.File(filepath);
-
-        //创建输入流
-        InputStream is = new FileInputStream(f);
-        //做一些业务判断，我这里简单点直接输出，你也可以封装到实体类返回具体信息
-        if (is == null) {
-            System.out.println("文件不存在");
-        }
-        //利用IOUtils将输入流的内容 复制到输出流
-        IOUtils.copy(is, os);
-        os.flush();
-        is.close();
-        os.close();
-        return null;
     }
 }
 

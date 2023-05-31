@@ -22,5 +22,5 @@ public interface MFileService extends IService<MFile> {
      * @return String
      */
     String uploadFile(MultipartFile file, String parentFolderPath, String fileGroup) throws IOException;
-    MFile download(int fid, OutputStream os)throws IOException;
+
 }

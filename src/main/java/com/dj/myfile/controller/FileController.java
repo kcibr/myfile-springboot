@@ -63,26 +63,33 @@ public class FileController {
         }
         QueryWrapper<MFile> wrapper = new QueryWrapper<>();
         wrapper.eq("parent_dir", parentDir)
+                .orderBy(true,true,"size")
                 .like("type", type)
                 .like("f_name",search);
         System.out.println("调用了查询接口");
     return mFileService.list(wrapper);
     }
-    @GetMapping("/queryType")
-    public Object typeQueryFileList(String fileGroup,String search,String type){
-        if (search == null){
-            search = "";
-        }
-        if (type == null){
-            type = "";
-        } else {
 
+    /**
+     * 分类查询
+     * @param params
+     * @return
+     */
+    @PostMapping("/queryType")
+    public Object typeQueryFileList(@RequestBody Map<String, String> params){
+        String search = "";
+        System.out.println(params.get("fileGroup"));
+        System.out.println(params.get("typeList"));
+        if (params.get("search") != null){
+            search = params.get("search");
         }
+        String arr[] = params.get("typeList").split("/");
         QueryWrapper<MFile> wrapper = new QueryWrapper<>();
-        wrapper.eq("file_group", fileGroup)
-                .like("type", type)
-                .like("f_name",search);
-        System.out.println("调用了查询接口");
+        wrapper.eq("file_group", params.get("fileGroup"))
+                .orderBy(true,true,"size")
+                .in("type", arr)
+                .like("f_name", search);
+        System.out.println("调用了分类查询接口");
         return mFileService.list(wrapper);
     }
     /**
@@ -103,6 +110,7 @@ public class FileController {
     }
 
     /**
+     * 文件上传
      * @param file
      * @param uploadFolderPath
      * @param fileGroup
@@ -123,6 +131,12 @@ public class FileController {
         return "上传完成";
     }
 
+    /**
+     * 文件下载
+     * @param params
+     * @param response
+     * @throws IOException
+     */
     @PostMapping("/download")
     public void fileDownload(@RequestBody Map<String, String> params, HttpServletResponse response)throws IOException{
         System.out.println(params.get("fid"));
@@ -145,5 +159,13 @@ public class FileController {
         }
         inputStream.close();
     }
-
+    @PostMapping("/deleteFiles")
+    public String deleteFile(@RequestBody Map<String, String> params){
+        System.out.println(params.get("fileList").split("/"));
+        String arr[] = params.get("fileList").split("/");
+        QueryWrapper<MFile> wrapper = new QueryWrapper<>();
+        wrapper.in("fid",arr);
+        mFileService.remove(wrapper);
+        return "删除完成";
+    }
 }
