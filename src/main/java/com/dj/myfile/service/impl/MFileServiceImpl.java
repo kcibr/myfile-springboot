@@ -87,54 +87,49 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
         int mb=1024*1024;
         int gb=1024*1024*1024;
         if (size >= gb) {
-
             fileSize = String.format(dec, size / gb) + "GB";
-
         } else if (size<gb && size>=mb) {
-
             fileSize = String.format(dec, size / mb) + "MB";
-
         } else if (size<mb && size>kb) {
-
             fileSize = String.format(dec, size / kb)+ "KB";
-
         }else if (size<kb){
-
             fileSize = String.format(dec, size) + "B";
-
         }
         System.out.println("04.文件大小==》"+fileSize);
         // 6.上传文件
         // 判断该路径下是否已经存在同名文件，有则中断执行返回信息
-        QueryWrapper w = new QueryWrapper<>();
+        QueryWrapper<MFile> w = new QueryWrapper<>();
         w.eq("path",filepath);
+        System.out.println("是否重复上传"+(getOne(w) != null));
         if (getOne(w) != null){
+            System.out.println("重复上传");
             return "已存在同名文件："+filename;
+        } else {
+            //判断文件夹是否存在，不存在则创建一个
+            File file1 = new File(root_path+"/"+parentFolderPath);
+            if (!file1.exists()) {
+                file1.mkdirs();
+                System.out.println("文件夹不存在，已创建文件夹");
+            }
+            try {
+                file.transferTo(new File(root_path+filepath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 7.保存信息到数据库并且同时将文件大小加入到父级目录大小中
+            MFile mFile = new MFile();
+            mFile.setFName(filename);
+            mFile.setFileGroup(fileGroup);
+            mFile.setPath(filepath);
+            mFile.setType(filetype);
+            mFile.setParentDir(parentFolderPath);
+            mFile.setSize(fileSize);
+            mFile.setIsFolder(0);
+            save(mFile);
+            // TODO 更新文件夹大小
+            return "上传成功";
         }
-        //判断文件夹是否存在，不存在则创建一个
-        File file1 = new File(root_path+"/"+parentFolderPath);
-        if (!file1.exists()) {
-            file1.mkdirs();
-            System.out.println("文件夹不存在，已创建文件夹");
-        }
-        try {
-            file.transferTo(new File(root_path+filepath));
-            System.out.println("上传成功");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // 7.保存信息到数据库并且同时将文件大小加入到父级目录大小中
-        MFile mFile = new MFile();
-        mFile.setFName(filename);
-        mFile.setFileGroup(fileGroup);
-        mFile.setPath(filepath);
-        mFile.setType(filetype);
-        mFile.setParentDir(parentFolderPath);
-        mFile.setSize(fileSize);
-        mFile.setIsFolder(0);
-        save(mFile);
-        // TODO 更新文件夹大小
-        return "上传成功";
+
     }
 }
 

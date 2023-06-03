@@ -3,6 +3,7 @@ package com.dj.myfile.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dj.myfile.entity.MFile;
 import com.dj.myfile.entity.User;
+import com.dj.myfile.mapper.MFileMapper;
 import com.dj.myfile.service.MFileService;
 import com.dj.myfile.utils.Result;
 import jakarta.servlet.ServletOutputStream;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,7 +42,8 @@ public class FileController {
     @Value("${rootPath}")
     private String root_path;
     final MFileService mFileService;
-
+    @Autowired
+    private MFileMapper mapper;
     public FileController(MFileService mFileService){
         this.mFileService = mFileService;
     }
@@ -159,6 +162,12 @@ public class FileController {
         }
         inputStream.close();
     }
+
+    /**
+     * 删除文件
+     * @param params
+     * @return
+     */
     @PostMapping("/deleteFiles")
     public String deleteFile(@RequestBody Map<String, String> params){
         System.out.println(params.get("fileList").split("/"));
@@ -167,5 +176,9 @@ public class FileController {
         wrapper.in("fid",arr);
         mFileService.remove(wrapper);
         return "删除完成";
+    }
+    @GetMapping("/queryDeletedFile")
+    public Object qDFiles(String fileGroup){
+        return mapper.queryIsDeleteFiles(fileGroup);
     }
 }
