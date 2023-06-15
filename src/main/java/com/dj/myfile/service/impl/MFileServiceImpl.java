@@ -18,14 +18,11 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
     private String root_path;
 
     /**
-     *
-     * @author kcibr
-     * @date 2023/4/24 19:02
-     * @Description //新建文件夹
+     * 新建文件夹
      * @param folderName
      * @param parentFolderPath
      * @param fileGroup
-     * @return String
+     * @return
      */
     @Override
     public String CreateNewFolder(String folderName, String parentFolderPath, String fileGroup) {
@@ -53,14 +50,12 @@ public class MFileServiceImpl extends ServiceImpl<MFileMapper, MFile> implements
     }
 
     /**
-     *
-     * @author kcibr
-     * @date 2023/4/24 18:54
-     * @Description //文件上传
+     * 文件上传
      * @param file
      * @param parentFolderPath
      * @param fileGroup
-     * @return String
+     * @return
+     * @throws IOException
      */
     @Override
     public String uploadFile(MultipartFile file, String parentFolderPath, String fileGroup) throws IOException {

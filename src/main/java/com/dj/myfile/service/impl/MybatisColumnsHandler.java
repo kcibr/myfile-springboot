@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * 实现数据库通用字段的自动注入（创建时间，创建人，更新时间，更新人）
   *创建人和更新人是根据IP地址获取主机名
  * @Author kcibr
- * @Date 2022/7/21 14:33
+ * @Date 2023/5/21 14:33
  */
 @Slf4j
 @Component

@@ -2,24 +2,14 @@ package com.dj.myfile.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dj.myfile.entity.MFile;
-import com.dj.myfile.entity.User;
 import com.dj.myfile.mapper.MFileMapper;
 import com.dj.myfile.service.MFileService;
-import com.dj.myfile.utils.Result;
 import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,14 +37,13 @@ public class FileController {
     public FileController(MFileService mFileService){
         this.mFileService = mFileService;
     }
+
     /**
-     *
-     * @author kcibr
-     * @date 2023/4/24 18:32
-     * @Description //查询用户全部文件
+     * 查询全部文件
      * @param parentDir
      * @param search
-     * @return Object
+     * @param type
+     * @return
      */
     @GetMapping("/queryAll")
     public Object queryFileList(String parentDir,String search,String type){
@@ -86,7 +75,7 @@ public class FileController {
         if (params.get("search") != null){
             search = params.get("search");
         }
-        String arr[] = params.get("typeList").split("/");
+        String arr[] = params.get("typeList").split("/");// 分割文件类型字符串，并转换成数组
         QueryWrapper<MFile> wrapper = new QueryWrapper<>();
         wrapper.eq("file_group", params.get("fileGroup"))
                 .orderBy(true,true,"size")
@@ -95,18 +84,14 @@ public class FileController {
         System.out.println("调用了分类查询接口");
         return mFileService.list(wrapper);
     }
+
     /**
-     *
-     * @author kcibr
-     * @date 2023/4/24 19:10
-     * @Description //新建文件夹
+     * 新建文件夹
      * @param folderName
      * @param parentFolderPath
      * @param fileGroup
-     * @return String
+     * @return
      */
-
-
     @GetMapping("/createNewFolder")
     public String NewFolder( String folderName, String parentFolderPath, String fileGroup){
         return mFileService.CreateNewFolder(folderName,parentFolderPath,fileGroup);
@@ -142,8 +127,6 @@ public class FileController {
      */
     @PostMapping("/download")
     public void fileDownload(@RequestBody Map<String, String> params, HttpServletResponse response)throws IOException{
-        System.out.println(params.get("fid"));
-        System.out.println(params.get("fName"));
         MFile f = mFileService.getById(params.get("fid"));
 
         File file = new File(root_path+f.getPath());
@@ -177,6 +160,26 @@ public class FileController {
         mFileService.remove(wrapper);
         return "删除完成";
     }
+
+    /**
+     * 修改文件名
+     * @param fid
+     * @param fName
+     * @return
+     */
+    @GetMapping("/reName")
+    public String reName(String fid,String fName) {
+        MFile file = mFileService.getById(fid);
+        file.setFName(fName);
+        mFileService.updateById(file);
+        return "修改成功";
+    }
+
+    /**
+     * 查询回收站文件
+     * @param fileGroup
+     * @return
+     */
     @GetMapping("/queryDeletedFile")
     public Object qDFiles(String fileGroup){
         return mapper.queryIsDeleteFiles(fileGroup);
